@@ -149,7 +149,7 @@ local function UpdateESP(plr)
                     if Settings.DistanceVisible then
                         local distance = math.floor((player.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude)
                         library.distance.Text = tostring(distance) .. " studs"
-                        library.distance.Position = Vector2.new(head.X, head.Y + 40)
+                        library.distance.Position = Vector2.new(head.X, head.Y - 20) -- Adjusted to position above the head
                         library.distance.Visible = true
                     else
                         library.distance.Visible = false
