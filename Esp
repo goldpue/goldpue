@@ -217,3 +217,5 @@ end)
 game.Players.PlayerRemoving:Connect(function(leavingPlr)
     ManageESP(leavingPlr)
 end)
+
+return Settings;
