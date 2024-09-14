@@ -10,6 +10,7 @@ local Settings = {
     TracerVisible = false,
     HealthVisible = false,
     NameVisible = false,
+    DistanceVisible = false -- Add this setting for distance visibility
 }
 
 local Team_Check = {
@@ -73,12 +74,13 @@ local function UpdateESP(plr)
         box = NewQuad(Settings.Box_Color),
         healthbar = NewLine(Color3.fromRGB(0, 0, 0)),
         greenhealth = NewLine(Color3.fromRGB(0, 0, 0)),
-        name = NewText(Color3.fromRGB(255, 255, 255), 14)
+        name = NewText(Color3.fromRGB(255, 255, 255), 14),
+        distance = NewText(Color3.fromRGB(255, 255, 255), 14) -- New distance text element
     }
 
     local connection
     connection = game:GetService("RunService").RenderStepped:Connect(function()
-        if Settings.BoxVisible or Settings.TracerVisible or Settings.HealthVisible or Settings.NameVisible then
+        if Settings.BoxVisible or Settings.TracerVisible or Settings.HealthVisible or Settings.NameVisible or Settings.DistanceVisible then
             if plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character.Humanoid.Health > 0 and plr.Character:FindFirstChild("Head") then
                 local HumPos, OnScreen = camera:WorldToViewportPoint(plr.Character.HumanoidRootPart.Position)
                 if OnScreen then
@@ -144,6 +146,15 @@ local function UpdateESP(plr)
                         library.name.Visible = true
                     end
 
+                    if Settings.DistanceVisible then
+                        local distance = math.floor((player.Character.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).magnitude)
+                        library.distance.Text = tostring(distance) .. " studs"
+                        library.distance.Position = Vector2.new(head.X, head.Y + 40)
+                        library.distance.Visible = true
+                    else
+                        library.distance.Visible = false
+                    end
+
                     if Team_Check.TeamCheck then
                         if plr.TeamColor == player.TeamColor then
                             library.tracer.Color = Team_Check.Green
@@ -163,6 +174,7 @@ local function UpdateESP(plr)
                     library.greenhealth.Visible = false
                     library.healthbar.Visible = false
                     library.name.Visible = false
+                    library.distance.Visible = false
                 end
             else
                 library.box.Visible = false
@@ -170,6 +182,7 @@ local function UpdateESP(plr)
                 library.greenhealth.Visible = false
                 library.healthbar.Visible = false
                 library.name.Visible = false
+                library.distance.Visible = false
             end
         else
             library.box.Visible = false
@@ -177,6 +190,7 @@ local function UpdateESP(plr)
             library.greenhealth.Visible = false
             library.healthbar.Visible = false
             library.name.Visible = false
+            library.distance.Visible = false
         end
     end)
 
