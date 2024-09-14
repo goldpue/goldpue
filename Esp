@@ -1,3 +1,5 @@
+local HttpService = game:GetService("HttpService")
+
 local Settings = {
     Box_Color = Color3.fromRGB(255, 0, 0),
     Tracer_Color = Color3.fromRGB(255, 0, 0),
@@ -71,7 +73,7 @@ local function UpdateESP(plr)
         box = NewQuad(Settings.Box_Color),
         healthbar = NewLine(Color3.fromRGB(0, 0, 0)),
         greenhealth = NewLine(Color3.fromRGB(0, 0, 0)),
-        name = NewText(Color3.fromRGB(255, 255, 255), 14) -- Default text size
+        name = NewText(Color3.fromRGB(255, 255, 255), 14)
     }
 
     local connection
@@ -134,11 +136,11 @@ local function UpdateESP(plr)
 
                     if Settings.NameVisible then
                         library.name.Text = plr.Name
-                        library.name.Position = Vector2.new(head.X, head.Y - 40) -- Adjusted position above the head
+                        library.name.Position = Vector2.new(head.X, head.Y - 40)
                         library.name.Visible = true
                     else
-                        library.name.Text = "" -- Placeholder text when NameVisible is off
-                        library.name.Position = Vector2.new(head.X, head.Y - 40) -- Same position above the head
+                        library.name.Text = ""
+                        library.name.Position = Vector2.new(head.X, head.Y - 40)
                         library.name.Visible = true
                     end
 
@@ -215,4 +217,3 @@ end)
 game.Players.PlayerRemoving:Connect(function(leavingPlr)
     ManageESP(leavingPlr)
 end)
-return Settigns;
