@@ -1,10 +1,10 @@
---------------------------------------------------------------------------------------UNIVERSAL LOADER----------------------------------------------------------------------------------------
+--// UNIVERSAL \\--
 repeat wait() until game:IsLoaded()
 local Start            = tick()
---------------------------------------------------------------------------------------DEFINE----------------------------------------------------------------------------------------
+--// DEFINE \\--
 local library          = loadstring(game:HttpGet("https://raw.githubusercontent.com/goldpue/goldpue/main/Library"))()
 local Notify           = loadstring(game:HttpGet("https://raw.githubusercontent.com/IceMinisterq/Notification-Library/Main/Library.lua"))()
---------------------------------------------------------------------------------------Library----------------------------------------------------------------------------------------
+--// LIBRARY \\--
 local lib              = library.new(game.Players.LocalPlayer.Name .. " | " .. identifyexecutor())
 local Themes = {
     Background         = Color3.fromRGB(24, 24, 24),
@@ -21,6 +21,9 @@ local Vis              = Universal:addSection("Visual")
 local Vs               = Universal:addSection("Sound")
 local Anti             = Universal:addSection("Anti")
 local Server           = Universal:addSection("Server")
+
+local Main1            = lib:addPage("Main", 5012544944)
+local Main             = Main1:addSection("Main")
 
 local Target0          = lib:addPage("Target", 10734977012)
 local T                = Target0:addSection("Target")
@@ -41,7 +44,7 @@ local Settings0        = lib:addPage("Settings", 10734950309)
 local Settings         = Settings0:addSection("Settings")
 local Theme            = Settings0:addSection("Theme")
 local Credits          = Settings0:addSection("Credits")
---------------------------------------------------------------------------------------VARIABLE----------------------------------------------------------------------------------------
+--// VARIABLE \\--
 local Players          = game:GetService("Players")
 local LocalPlayer      = Players.LocalPlayer
 local Character        = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
@@ -59,6 +62,7 @@ local HttpService      = game:GetService("HttpService")
 local RunService       = game:GetService("RunService")
 local GuiService       = game:GetService("GuiService")
 
+local DefaultZoom      = LocalPlayer.CameraMaxZoomDistance
 local DefaultWalkSpeed = Humanoid.WalkSpeed
 local DefaultJumpPower = Humanoid.JumpPower
 local DefaultHipHeight = Humanoid.HipHeight
@@ -83,7 +87,13 @@ local Down, Up
 local TARGET
 local Connection
 local Sound
---------------------------------------------------------------------------------------FUNCTION----------------------------------------------------------------------------------------
+
+--// STATUS \\--
+loadstring(game:HttpGet('https://raw.githubusercontent.com/goldpue/goldpue/main/Statuses'))()
+Container01, Text01 = Nil:addParagraph(nil, "Universal: " .. Games_Universal)
+Container02, Text02 = Nil:addParagraph(nil, "Sharkbite2: " .. Games_Sharkbite)
+
+--// FUNCTION \\--
 local function GetRoot(char)
     return char:FindFirstChild("Head")
 end
@@ -409,7 +419,7 @@ end
 local function CancelSearch()
     SniperText.Text = "Join a player by just knowing what game their in!"
 end
---------------------------------------------------------------------------------------MAIN----------------------------------------------------------------------------------------
+--// LOCALPLAYER \\--
 Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
     WalkSpeedSlider = Value
     if ChangeWalkSpeed then
@@ -492,7 +502,7 @@ end)
 Player:addButton("Respawn", function()
     Humanoid:ChangeState(15)
 end)
---------------------------------------------------------------------------------------CLIENT----------------------------------------------------------------------------------------
+--// CLIENT \\--
 Vis:addToggle("RTX Shaders", false, function(Value)
     if Value then
         local Bloom = Instance.new("BloomEffect")
@@ -657,7 +667,7 @@ Vis:addToggle("RTX Shaders", false, function(Value)
         Lighting.Ambient = OldAmbient
     end
 end)
---------------------------------------------------------------------------------------SOUND----------------------------------------------------------------------------------------
+--// SOUND \\--
 Vs:addTextbox("Sound ID", nil, function(v)
     if Sound then
         Sound:Stop()
@@ -686,12 +696,20 @@ Vs:addButton("Play Sound", function()
         Sound:Play()
     end
 end)
---------------------------------------------------------------------------------------ANTI----------------------------------------------------------------------------------------
+--// TOGGLE \\--
 Anti:addToggle("Anti Void", false, function(Value)
     if Value then
         Workspace.FallenPartsDestroyHeight = math.huge-math.huge
     else
         Workspace.FallenPartsDestroyHeight = Fallen
+    end
+end)
+
+Anti:addToggle("Max Zoom", false, function(Value)
+    if Value then
+        LocalPlayer.CameraMaxZoomDistance = math.huge
+    else
+        LocalPlayer.CameraMaxZoomDistance = DefaultZoom
     end
 end)
 
@@ -753,7 +771,7 @@ Anti:addToggle("Anti Stun", false, function(Value)
         end
     end
 end)
---------------------------------------------------------------------------------------SERVER----------------------------------------------------------------------------------------
+--// SERVER \\--
 Server:addButton("Rejoin", function()
     TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
 end)
@@ -761,7 +779,8 @@ end)
 Server:addButton("Serverhop", function()
     loadstring(game:HttpGet(('https://raw.githubusercontent.com/goldpue/goldpue/main/ServerHop'),true))()
 end)
---------------------------------------------------------------------------------------TARGET----------------------------------------------------------------------------------------
+
+--// TARGET \\--
 T:addTextbox("Target", nil, function(v)
     local t = gplr(v)
     if t then
@@ -788,7 +807,7 @@ T:addButton("Inspect", function()
 GuiService:CloseInspectMenu()
 GuiService:InspectPlayerFromUserId(TARGET.UserId)
 end)
---------------------------------------------------------------------------------------FLING----------------------------------------------------------------------------------------
+--// FLING \\--
 F:addToggle("Fling", false, function(Value)
     fling = Value
 end)
@@ -810,7 +829,7 @@ RunService.Heartbeat:Connect(function()
         HumanoidRootPart.CFrame = HumanoidRootPart.CFrame
     end
 end)
---------------------------------------------------------------------------------------STRAFE----------------------------------------------------------------------------------------
+--// STRAFE \\--
 C:addSlider("CircleRadius", CircleRadius, 10, 100, function(Value)
     CircleRadius = Value
 end)
@@ -834,7 +853,7 @@ C:addToggle("Circle", false, function(Value)
         ChangeCirclePlayer = nil
     end
 end)
---------------------------------------------------------------------------------------EXPEREMENT----------------------------------------------------------------------------------------
+--// EXPEREMENT \\--
 SniperContainer, SniperText = Sniper:addParagraph("Status", "Join a player by just knowing what game their in!")
 WebhookContainer, WebhookText = Webhook:addParagraph("Status", "Spam a webhook")
 
@@ -948,7 +967,7 @@ Webhook:addToggle("Spam Webhook", false, function(Value)
         WebhookText.Text = 'Spam a webhook'
     end
 end)
---------------------------------------------------------------------------------------SETTING----------------------------------------------------------------------------------------
+--// SETTING \\--
 Settings:addKeybind("UI Toggle", Enum.KeyCode.LeftControl, function()
     lib:toggle()
 end, function() 
@@ -975,11 +994,11 @@ end
 
 Credits:addButton("Seth", function()
 end)
---------------------------------------------------------------------------------------SOON----------------------------------------------------------------------------------------
-Nil:addParagraph("Games", "Soon!")
+--// SOON \\--
+loadstring(game:HttpGet('https://raw.githubusercontent.com/goldpue/goldpue/main/Statuses'))()
 
 Nil2:addParagraph("FE", "Soon!")
---------------------------------------------------------------------------------------END----------------------------------------------------------------------------------------
+--// END \\--
 lib:SelectPage(lib.pages[1], true)
 local End = tick()
 local Total = string.format("%.2f seconds", math.abs(End - Start))
