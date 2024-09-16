@@ -884,7 +884,10 @@ Main:addToggle("Inf Oxygen", false, function(Value)
         :FindFirstChild("Oxygen")
 
     if oxygenScript then
-        oxygenScript.Disabled = not Value
+        while Value do
+            oxygenScript.Disabled = not Value
+            task.wait()
+        end
     end
 end)
 
