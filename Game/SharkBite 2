@@ -1,0 +1,1148 @@
+--// SHARKBITE \\--
+repeat wait() until game:IsLoaded()
+local Start            = tick()
+--// DEFINE \\--
+local library          = loadstring(game:HttpGet("https://raw.githubusercontent.com/goldpue/goldpue/main/Library"))()
+local Notify           = loadstring(game:HttpGet("https://raw.githubusercontent.com/IceMinisterq/Notification-Library/Main/Library.lua"))()
+--// LIBRARY \\--
+local lib              = library.new(game.Players.LocalPlayer.Name .. " | " .. identifyexecutor())
+local Themes = {
+    Background         = Color3.fromRGB(24, 24, 24),
+    Glow               = Color3.fromRGB(0, 0, 0),
+    Accent             = Color3.fromRGB(10, 10, 10),
+    LightContrast      = Color3.fromRGB(20, 20, 20),
+    DarkContrast       = Color3.fromRGB(14, 14, 14),    
+    TextColor          = Color3.fromRGB(255, 255, 255)    
+}
+
+local Universal        = lib:addPage("Universal", 10747373176)
+local Player           = Universal:addSection("Player")
+local Vis              = Universal:addSection("Visual")
+local Vs               = Universal:addSection("Sound")
+local Anti             = Universal:addSection("Anti")
+local Server           = Universal:addSection("Server")
+
+local Main1            = lib:addPage("Main", 5012544944)
+local Main             = Main1:addSection("Main")
+
+local Target0          = lib:addPage("Target", 10734977012)
+local T                = Target0:addSection("Target")
+local F                = Target0:addSection("Fling")
+local C                = Target0:addSection("Circle")
+
+local Target1          = lib:addPage("Experemental", 10723346959)
+local Sniper           = Target1:addSection("Sniper")
+local Webhook          = Target1:addSection("Webhook")
+
+local Soon             = lib:addPage("Games", 10723385545)
+local Nil              = Soon:addSection("Games")
+
+local Fe               = lib:addPage("FE", 10723404337)
+local Nil2             = Fe:addSection("FE")
+
+local Settings0        = lib:addPage("Settings", 10734950309)
+local Settings         = Settings0:addSection("Settings")
+local Theme            = Settings0:addSection("Theme")
+local Credits          = Settings0:addSection("Credits")
+--// VARIABLE \\--
+local Players          = game:GetService("Players")
+local LocalPlayer      = game:GetService("Players").LocalPlayer
+local Character        = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local Humanoid         = Character:WaitForChild("Humanoid")
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+local Mouse            = LocalPlayer:GetMouse()
+
+local Workspace        = game:GetService("Workspace")
+local StarterGui       = game:GetService("StarterGui")
+local TeleportService  = game:GetService("TeleportService")
+local Lighting         = game:GetService("Lighting")
+local CoreGui          = game:GetService("CoreGui")
+local VirtualUser      = game:GetService("VirtualUser")
+local RepStorage       = game:GetService("ReplicatedStorage")
+local HttpService      = game:GetService("HttpService")
+local RunService       = game:GetService("RunService")
+local GuiService       = game:GetService("GuiService")
+
+local DefaultZoom      = LocalPlayer.CameraMaxZoomDistance
+local DefaultWalkSpeed = Humanoid.WalkSpeed
+local DefaultJumpPower = Humanoid.JumpPower
+local DefaultHipHeight = Humanoid.HipHeight
+local DefaultGravity   = Workspace.Gravity
+local DefaultFOV       = Workspace.Camera.FieldOfView
+local WalkSpeedSlider  = DefaultWalkSpeed
+local JumpPowerSlider  = DefaultJumpPower
+local HipHeightSlider  = DefaultHipHeight
+local GravitySlider    = DefaultGravity
+local FOVSlider        = DefaultFOV
+
+local Fallen           = Workspace.FallenPartsDestroyHeight
+
+local fling            = false
+local Flying           = false
+local Toggle           = false
+local Speed            = 50
+local CircleSpeed      = 5
+local CircleRadius     = 10
+
+local Down, Up
+local TARGET
+local Connection
+local Sound
+
+--// STATUS \\--
+loadstring(game:HttpGet('https://raw.githubusercontent.com/goldpue/goldpue/main/Statuses'))()
+Container01, Text01 = Nil:addParagraph(nil, "Universal: " .. Games_Universal)
+Container02, Text02 = Nil:addParagraph(nil, "Sharkbite2: " .. Games_Sharkbite)
+--// FUNCTION \\--
+local function GetRoot(char)
+    return char:FindFirstChild("Head")
+end
+
+local function WalkSpeed()
+    while ChangeWalkSpeed and task.wait() do
+        if ChangeWalkSpeed then
+            Humanoid.WalkSpeed = WalkSpeedSlider
+        else
+            Humanoid.WalkSpeed = DefaultWalkSpeed
+        end
+    end
+end
+
+local function JumpPower()
+    while ChangeJumpPower and task.wait() do
+        if ChangeJumpPower then
+            Humanoid.JumpPower = JumpPowerSlider
+        else
+            Humanoid.JumpPower = DefaultJumpPower
+        end
+    end
+end
+
+local function HipHeight()
+    while ChangeHipHeight and task.wait() do
+        if ChangeHipHeight then
+            Humanoid.HipHeight = HipHeightSlider
+        else
+            Humanoid.HipHeight = DefaultHipHeight
+        end
+    end
+end
+
+local function Gravity()
+    while ChangeGravity and task.wait() do
+        if ChangeGravity then
+            Workspace.Gravity = GravitySlider
+        else
+            Workspace.Gravity = DefaultGravity
+        end
+    end
+end
+
+local function Noclip()
+    while ChangeNoclip and task.wait() do
+        for i, v in pairs(LocalPlayer.Character:GetDescendants()) do
+            if v:IsA("BasePart") then
+                v.CanCollide = not ChangeNoclip
+            end
+        end
+    end
+end
+
+local function SFly()
+    if Flying then return end
+
+    repeat task.wait() until LocalPlayer and LocalPlayer.Character and GetRoot(LocalPlayer.Character) and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+    repeat task.wait() until Mouse
+
+    if Down or Up then
+        if Down then Down:Disconnect() Down = nil end
+        if Up then Up:Disconnect() Up = nil end
+    end
+
+    local T = GetRoot(LocalPlayer.Character)
+    local Control = {F = 0, B = 0, L = 0, R = 0}
+
+    local function Fly()
+        Flying = true
+        local Bg = Instance.new('BodyGyro')
+        local Bv = Instance.new('BodyVelocity')
+        Bg.P = 9e4
+        Bg.Parent = T
+        Bv.Parent = T
+        Bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+        Bg.cframe = T.CFrame
+        Bv.velocity = Vector3.new(0, 0, 0)
+        Bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+
+        task.spawn(function()
+            repeat task.wait()
+                if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+                    LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = true
+                end
+
+                local moveDirection = Vector3.new()
+                if Control.L + Control.R ~= 0 or Control.F + Control.B ~= 0 then
+                    moveDirection = ((Workspace.CurrentCamera.CFrame.lookVector * (Control.F + Control.B)) + ((Workspace.CurrentCamera.CFrame * CFrame.new(Control.L + Control.R, (Control.F + Control.B) * 0.2, 0).p) - Workspace.CurrentCamera.CFrame.p)) * Speed
+                end
+                
+                Bv.velocity = moveDirection
+                Bg.cframe = Workspace.CurrentCamera.CFrame
+            until not Flying
+
+            Bg:Destroy()
+            Bv:Destroy()
+            if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+                LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
+            end
+        end)
+    end
+
+    Down = Mouse.KeyDown:Connect(function(Key)
+        if Flying then
+            if Key:lower() == 'w' then Control.F = 1
+            elseif Key:lower() == 's' then Control.B = -1
+            elseif Key:lower() == 'a' then Control.L = -1
+            elseif Key:lower() == 'd' then Control.R = 1 end
+            pcall(function() Workspace.CurrentCamera.CameraType = Enum.CameraType.Track end)
+        end
+    end)
+
+    Up = Mouse.KeyUp:Connect(function(Key)
+        if Flying then
+            if Key:lower() == 'w' then Control.F = 0
+            elseif Key:lower() == 's' then Control.B = 0
+            elseif Key:lower() == 'a' then Control.L = 0
+            elseif Key:lower() == 'd' then Control.R = 0 end
+        end
+    end)
+    Fly()
+end
+
+local function NoFly()
+    if not Flying then return end
+
+    Flying = false
+    if Down or Up then
+        if Down then Down:Disconnect() Down = nil end
+        if Up then Up:Disconnect() Up = nil end
+    end
+    if LocalPlayer.Character:FindFirstChildOfClass('Humanoid') then
+        LocalPlayer.Character:FindFirstChildOfClass('Humanoid').PlatformStand = false
+    end
+    pcall(function() Workspace.CurrentCamera.CameraType = Enum.CameraType.Custom end)
+end
+
+local function FlyFunction()
+    if ChangeFly then
+        SFly()
+    else
+        NoFly()
+    end
+end
+
+local function Xray()
+    local t = false
+
+    local function scan(z, t)
+        for _, i in pairs(z:GetChildren()) do
+            if i:IsA("BasePart") and
+               not i.Parent:FindFirstChild("Humanoid") and
+               not i.Parent.Parent:FindFirstChild("Humanoid") then
+                i.LocalTransparencyModifier = t
+            end
+            scan(i, t)
+        end
+    end
+
+    local function x(v)
+        if v then
+            if ChangeXray then
+                scan(workspace, 0.9)
+            else
+                scan(workspace, 0)
+            end
+        else
+            scan(workspace, 0)
+        end
+    end
+
+    t = not t
+    x(t)
+end
+
+function GetClosest()
+    local closestPlayer
+    local shortestDistance = math.huge
+
+    for i, v in pairs(game.Players:GetPlayers()) do
+        if v ~= game.Players.LocalPlayer and v.Character and v.Character:FindFirstChild("Head") and v.Character.Humanoid.Health ~= 0 and v.Character:FindFirstChild("HumanoidRootPart") then
+            local pos = game.Workspace.CurrentCamera:WorldToViewportPoint(v.Character.Head.Position)
+            local magnitude = (Vector2.new(pos.X, pos.Y) - Vector2.new(game.Players.LocalPlayer:GetMouse().X, game.Players.LocalPlayer:GetMouse().Y)).magnitude
+            if magnitude < shortestDistance then
+                closestPlayer = v
+                shortestDistance = magnitude
+            end
+        end
+    end
+    return closestPlayer
+end
+
+function gplr(String)
+    local strl = String:lower()
+    for i,v in pairs(Players:GetPlayers()) do
+        if v.Name:lower():sub(1, #String) == String:lower() or v.DisplayName:lower():sub(1, #String) == String:lower() then
+            return v
+        end
+    end 
+end
+
+local function calculateCirclePosition(angle)
+    local targetPlayer = TARGET
+    if not targetPlayer then
+        return nil
+    end
+
+    local targetPosition = targetPlayer.Character and targetPlayer.Character.HumanoidRootPart.Position
+    if not targetPosition then
+        return nil
+    end
+
+    local x = targetPosition.X + CircleRadius * math.cos(angle)
+    local z = targetPosition.Z + CircleRadius * math.sin(angle)
+    return Vector3.new(x, targetPosition.Y, z)
+end
+
+local function calculateNextAngle(currentAngle, speed)
+    local maxDeltaAngle = math.rad(speed)
+    local nextAngle = currentAngle + maxDeltaAngle
+    return nextAngle
+end
+
+local function ToggleUI()    
+    local Button0 = Instance.new("ScreenGui")
+    local Button = Instance.new("TextButton")
+    local UICorner = Instance.new("UICorner")
+    local UICorner_2 = Instance.new("UICorner")
+
+    Button0.Name = "Button0"
+    Button0.Parent = CoreGui
+    
+    Button.Name = "Button"
+    Button.Parent = Button0
+    Button.BackgroundColor3 = Color3.fromRGB(77, 77, 77)
+    Button.BorderColor3 = Color3.fromRGB(52, 52, 52)
+    Button.BorderSizePixel = 0
+    Button.Position = UDim2.new(0.942588627, 0, 0.223685458, 0)
+    Button.Size = UDim2.new(0.05, 0, 0.05, 0)
+    Button.Font = Enum.Font.FredokaOne
+    Button.Text = "T"
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.TextScaled = true
+    Button.TextSize = 33.000
+    Button.TextWrapped = true
+    Button.Draggable = true
+    
+    UICorner.Parent = Button
+    
+    UICorner_2.Parent = Button
+    
+    Button.MouseButton1Click:connect(function()
+        Toggle = not Toggle
+    end)
+    
+    while ChangeToggle do
+        if Toggle then
+            Toggle = false
+            lib:toggle()
+        end
+        wait()
+    end
+end
+
+local function GetAvatar(ChangeTargetUserId)
+    local url = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" .. ChangeTargetUserId .. "&size=48x48&format=Png&isCircular=false"
+    
+    local success, response = pcall(function()
+        return HttpService:GetAsync(url)
+    end)
+    
+    if success and response then
+        local data = HttpService:JSONDecode(response)
+        if data and data.data[1] then
+            return data.data[1].imageUrl
+        else
+            Notify:SendNotification("Error", "Failed to retrieve avatar image URL for User ID: " .. ChangeTargetUserId, 5)
+        end
+    else
+        Notify:SendNotification("Error", "Failed to request avatar for User ID: " .. ChangeTargetUserId, 5)
+    end
+    return nil
+end
+
+local function GetUser(Tokens)
+    local url = "https://thumbnails.roblox.com/v1/batch"
+    local data = {}
+    for _, token in ipairs(Tokens) do
+        table.insert(data, {
+            token = token,
+            type = "AvatarHeadShot",
+            size = "48x48",
+            isCircular = false
+        })
+    end
+    data = HttpService:JSONEncode(data)
+    local headers = {
+        ["Content-Type"] = "application/json"
+    }
+    
+    local success, response = pcall(function()
+        return HttpService:PostAsync(url, data, Enum.HttpContentType.ApplicationJson)
+    end)
+    
+    if success and response then
+        local imageUrls = {}
+        local decodedData = HttpService:JSONDecode(response)
+        if decodedData and decodedData.data then
+            for _, item in ipairs(decodedData.data) do
+                table.insert(imageUrls, item.imageUrl)
+            end
+            return imageUrls
+        else
+            Notify:SendNotification("Error", "Failed to retrieve avatar images for tokens", 5)
+        end
+    else
+        Notify:SendNotification("Error", "Failed to request avatar images", 5)
+    end
+    return {}
+end
+
+local function CancelSearch()
+    SniperText.Text = "Join a player by just knowing what game their in!"
+end
+
+local PlayerEsp = false
+local SharkEsp = false
+local highlights = {}
+local sharkHighlights = {}
+
+local function addEsp(player)
+    if not PlayerEsp then return end
+    if player ~= game.Players.LocalPlayer then
+        local character = player.Character or player.CharacterAdded:Wait()
+        if not highlights[player] then
+            local newHighlight = Instance.new("Highlight")
+            newHighlight.Parent = character
+            highlights[player] = newHighlight
+
+            player.CharacterAdded:Connect(function(char)
+                if highlights[player] then
+                    newHighlight.Parent = char
+                end
+            end)
+        end
+    end
+end
+
+local function removeEsp(player)
+    if highlights[player] then
+        highlights[player]:Destroy()
+        highlights[player] = nil
+    end
+end
+
+local function addSharkEsp(shark)
+    if not SharkEsp then return end
+    if not sharkHighlights[shark] then
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.fromRGB(134, 242, 0)
+        highlight.OutlineTransparency = 0.3
+        highlight.FillTransparency = 0.2
+        highlight.Parent = shark
+        sharkHighlights[shark] = highlight
+    end
+end
+
+local function removeSharkEsp(shark)
+    if sharkHighlights[shark] then
+        sharkHighlights[shark]:Destroy()
+        sharkHighlights[shark] = nil
+    end
+end
+
+local function updateEsp()
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if PlayerEsp then
+            addEsp(player)
+        else
+            removeEsp(player)
+        end
+    end
+
+    if SharkEsp then
+        for _, shark in pairs(game:GetService("Workspace").Sharks:GetChildren()) do
+            addSharkEsp(shark)
+        end
+    else
+        for _, highlight in pairs(sharkHighlights) do
+            highlight:Destroy()
+        end
+        sharkHighlights = {}
+    end
+end
+
+Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
+    WalkSpeedSlider = Value
+    if ChangeWalkSpeed then
+        Humanoid.WalkSpeed = WalkSpeedSlider
+    end
+end)
+
+Player:addSlider("Jumppower", DefaultJumpPower, 0, 500, function(Value)
+    JumpPowerSlider = Value
+    if ChangeJumpPower then
+        Humanoid.JumpPower = JumpPowerSlider
+    end
+end)
+
+Player:addSlider("Hip Height", DefaultHipHeight, 0, 100, function(Value)
+    HipHeightSlider = Value
+    if ChangeHipHeight then
+        Humanoid.HipHeight = HipHeightSlider
+    end
+end)
+
+Player:addSlider("Gravity", DefaultGravity, 0, 100, function(Value)
+    GravitySlider = Value
+    if ChangeGravity then
+        Workspace.Gravity = GravitySlider
+    end
+end)
+
+Player:addToggle("Enable WalkSpeed", false, function(Value)
+    ChangeWalkSpeed = Value
+    WalkSpeed()
+end)
+
+Player:addToggle("Enable JumpPower", false, function(Value)
+    ChangeJumpPower = Value
+    JumpPower()
+end)
+
+Player:addToggle("Enable Hip Height", false, function(Value)
+    ChangeHipHeight = Value
+    HipHeight()
+end)
+
+Player:addToggle("Enable Gravity", false, function(Value)
+    ChangeGravity = Value
+    Gravity()
+end)
+
+Player:addSlider("Fly Speed", 50, 0, 500, function(Value)
+    Speed = Value
+end)
+
+Player:addToggle("Enable Fly", false, function(Value)
+    ChangeFly = Value
+    FlyFunction()
+end)
+
+Player:addToggle("Noclip", false, function(Value)
+    ChangeNoclip = Value
+    Noclip()
+end)
+
+Player:addToggle("Xray", false, function(Value)
+    ChangeXray = Value
+    Xray()
+end)
+
+Player:addToggle("Enable Reset", false, function(Value)
+    StarterGui:SetCore("ResetButtonCallback", Value)
+end)
+
+Player:addSlider("FOV", DefaultFOV, 70, 120, function(FOV)
+    Workspace.Camera.FieldOfView = FOV
+end)
+
+Player:addButton("Open Console", function()
+    StarterGui:SetCore("DevConsoleVisible", true)
+end)
+
+Player:addButton("Respawn", function()
+    Humanoid.Health = 0
+end)
+--// CLIENT \\--
+Vis:addToggle("RTX Shaders", false, function(Value)
+    if Value then
+        local Bloom = Instance.new("BloomEffect")
+        Bloom.Name = "Bloom (RTX Shaders)"
+        Bloom.Intensity = 0.1
+        Bloom.Threshold = 0
+        Bloom.Size = 100
+        
+        local Tropic = Instance.new("Sky")
+        Tropic.Name = "Tropic (RTX Shaders)"
+        Tropic.SkyboxUp = "http://www.roblox.com/asset/?id=169210149"
+        Tropic.SkyboxLf = "http://www.roblox.com/asset/?id=169210133"
+        Tropic.SkyboxBk = "http://www.roblox.com/asset/?id=169210090"
+        Tropic.SkyboxFt = "http://www.roblox.com/asset/?id=169210121"
+        Tropic.StarCount = 100
+        Tropic.SkyboxDn = "http://www.roblox.com/asset/?id=169210108"
+        Tropic.SkyboxRt = "http://www.roblox.com/asset/?id=169210143"
+        Tropic.Parent = Bloom
+        
+        local Sky = Instance.new("Sky")
+        Sky.Name = "Sky (RTX Shaders)"
+        Sky.SkyboxUp = "http://www.roblox.com/asset/?id=196263782"
+        Sky.SkyboxLf = "http://www.roblox.com/asset/?id=196263721"
+        Sky.SkyboxBk = "http://www.roblox.com/asset/?id=196263721"
+        Sky.SkyboxFt = "http://www.roblox.com/asset/?id=196263721"
+        Sky.CelestialBodiesShown = false
+        Sky.SkyboxDn = "http://www.roblox.com/asset/?id=196263643"
+        Sky.SkyboxRt = "http://www.roblox.com/asset/?id=196263721"
+        Sky.Parent = Bloom
+        
+        Bloom.Parent = Lighting
+        
+        local Bloom = Instance.new("BloomEffect")
+        Bloom.Name = "Bloom (RTX Shaders)"
+        Bloom.Enabled = false
+        Bloom.Intensity = 0.35
+        Bloom.Threshold = 0.2
+        Bloom.Size = 56
+        
+        local Tropic = Instance.new("Sky")
+        Tropic.Name = "Tropic (RTX Shaders)"
+        Tropic.SkyboxUp = "http://www.roblox.com/asset/?id=169210149"
+        Tropic.SkyboxLf = "http://www.roblox.com/asset/?id=169210133"
+        Tropic.SkyboxBk = "http://www.roblox.com/asset/?id=169210090"
+        Tropic.SkyboxFt = "http://www.roblox.com/asset/?id=169210121"
+        Tropic.StarCount = 100
+        Tropic.SkyboxDn = "http://www.roblox.com/asset/?id=169210108"
+        Tropic.SkyboxRt = "http://www.roblox.com/asset/?id=169210143"
+        Tropic.Parent = Bloom
+        
+        local Sky = Instance.new("Sky")
+        Sky.Name = "Sky (RTX Shaders)"
+        Sky.SkyboxUp = "http://www.roblox.com/asset/?id=196263782"
+        Sky.SkyboxLf = "http://www.roblox.com/asset/?id=196263721"
+        Sky.SkyboxBk = "http://www.roblox.com/asset/?id=196263721"
+        Sky.SkyboxFt = "http://www.roblox.com/asset/?id=196263721"
+        Sky.CelestialBodiesShown = false
+        Sky.SkyboxDn = "http://www.roblox.com/asset/?id=196263643"
+        Sky.SkyboxRt = "http://www.roblox.com/asset/?id=196263721"
+        Sky.Parent = Bloom
+
+        Bloom.Parent = Lighting
+
+        local Blur = Instance.new("BlurEffect")
+        Blur.Name = "Bloom (RTX Shaders)"
+        Blur.Size = 2
+        Blur.Parent = Lighting
+
+        local Efecto = Instance.new("BlurEffect")
+        Efecto.Name = "Bloom (RTX Shaders)"
+        Efecto.Enabled = false
+        Efecto.Size = 2
+        Efecto.Parent = Lighting
+
+        local Inaritaisha = Instance.new("ColorCorrectionEffect")
+        Inaritaisha.Name = "Inari taisha (RTX Shaders)"
+        Inaritaisha.Saturation = 0.05
+        Inaritaisha.TintColor = Color3.fromRGB(255, 224, 219)
+        Inaritaisha.Parent = Lighting
+
+        local Normal = Instance.new("ColorCorrectionEffect")
+        Normal.Name = "Normal (RTX Shaders)"
+        Normal.Enabled = false
+        Normal.Saturation = -0.2
+        Normal.TintColor = Color3.fromRGB(255, 232, 215)
+        Normal.Parent = Lighting
+
+        local SunRays = Instance.new("SunRaysEffect")
+        SunRays.Name = "SunRays (RTX Shaders)"
+        SunRays.Intensity = 0.05
+        SunRays.Parent = Lighting
+
+        local Sunset = Instance.new("Sky")
+        Sunset.Name = "Sunset (RTX Shaders)"
+        Sunset.SkyboxUp = "rbxassetid://323493360"
+        Sunset.SkyboxLf = "rbxassetid://323494252"
+        Sunset.SkyboxBk = "rbxassetid://323494035"
+        Sunset.SkyboxFt = "rbxassetid://323494130"
+        Sunset.SkyboxDn = "rbxassetid://323494368"
+        Sunset.SunAngularSize = 14
+        Sunset.SkyboxRt = "rbxassetid://323494067"
+        Sunset.Parent = Lighting
+
+        local Takayama = Instance.new("ColorCorrectionEffect")
+        Takayama.Name = "Takayama (RTX Shaders)"
+        Takayama.Enabled = false
+        Takayama.Saturation = -0.3
+        Takayama.Contrast = 0.1
+        Takayama.TintColor = Color3.fromRGB(235, 214, 204)
+        Takayama.Parent = Lighting
+
+        OldBrightness = Lighting.Brightness
+        OldColorShiftBottom = Lighting.ColorShift_Bottom
+        OldColorShiftTop = Lighting.ColorShift_Top
+        OldOutdoorAmbient = Lighting.OutdoorAmbient
+        OldClockTime = Lighting.ClockTime
+        OldFogColor = Lighting.FogColor
+        OldFogEnd = Lighting.FogEnd
+        OldFogStart = Lighting.FogStart
+        OldExposureCompensation = Lighting.ExposureCompensation
+        OldShadowSoftness = Lighting.ShadowSoftness
+        OldAmbient = Lighting.Ambient
+
+        Lighting.Brightness = 2.14
+        Lighting.ColorShift_Bottom = Color3.fromRGB(11, 0, 20)
+        Lighting.ColorShift_Top = Color3.fromRGB(240, 127, 14)
+        Lighting.OutdoorAmbient = Color3.fromRGB(34, 0, 49)
+        Lighting.ClockTime = 6.7
+        Lighting.FogColor = Color3.fromRGB(94, 76, 106)
+        Lighting.FogEnd = 1000
+        Lighting.FogStart = 0
+        Lighting.ExposureCompensation = 0.24
+        Lighting.ShadowSoftness = 0
+        Lighting.Ambient = Color3.fromRGB(59, 33, 27)
+    else
+        for i, Child in pairs(Lighting:GetChildren()) do
+            if Child.Name == "Sunset (RTX Shaders)" then
+                Child:Destroy()
+            elseif Child.Name == "Bloom (RTX Shaders)" then
+                Child:Destroy()
+            elseif Child.Name == "Inari taisha (RTX Shaders)" then
+                Child:Destroy()
+            elseif Child.Name == "Normal (RTX Shaders)" then
+                Child:Destroy()
+            elseif Child.Name == "SunRays (RTX Shaders)" then
+                Child:Destroy()
+            elseif Child.Name == "Takayama (RTX Shaders)" then
+                Child:Destroy()
+            end
+        end
+        
+        Lighting.Brightness = OldBrightness
+        Lighting.ColorShift_Bottom = OldColorShiftBottom
+        Lighting.ColorShift_Top = OldColorShiftTop
+        Lighting.OutdoorAmbient = OldOutdoorAmbient
+        Lighting.ClockTime = OldClockTime
+        Lighting.FogColor = OldFogColor
+        Lighting.FogEnd = OldFogEnd
+        Lighting.FogStart = OldFogStart
+        Lighting.ExposureCompensation = OldExposureCompensation
+        Lighting.ShadowSoftness = OldShadowSoftness
+        Lighting.Ambient = OldAmbient
+    end
+end)
+--// SOUND \\--
+Vs:addTextbox("Sound ID", nil, function(v)
+    if Sound then
+        Sound:Stop()
+        Sound:Destroy()
+    end
+    Sound = Instance.new("Sound", LocalPlayer.PlayerGui)
+    Sound.SoundId = "rbxassetid://" .. tonumber(v)
+    Sound.Volume = Target.Volume or 1
+    Sound.Looped = Target.LoopToggle or false
+end)
+
+Vs:addTextbox("Volume", "1", function(v)
+    if Sound then
+        Sound.Volume = tonumber(v)
+    end
+end)
+
+Vs:addToggle("Loop", false, function(Value)
+    if Sound then
+        Sound.Looped = Value
+    end
+end)
+
+Vs:addButton("Play Sound", function()
+    if Sound then
+        Sound:Play()
+    end
+end)
+--// TOGGLE \\--
+Anti:addToggle("Anti Void", false, function(Value)
+    if Value then
+        Workspace.FallenPartsDestroyHeight = math.huge-math.huge
+    else
+        Workspace.FallenPartsDestroyHeight = Fallen
+    end
+end)
+
+Anti:addToggle("Max Zoom", false, function(Value)
+    if Value then
+        LocalPlayer.CameraMaxZoomDistance = math.huge
+    else
+        LocalPlayer.CameraMaxZoomDistance = DefaultZoom
+    end
+end)
+
+Anti:addToggle("Anti AFK", false, function(Value)
+    if Value then
+        Players.LocalPlayer.Idled:Connect(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton2(Vector2.new())
+        end)
+    end
+end)
+
+Anti:addToggle("Anti Fall Damage", false, function(Value)
+    if Value then
+        if not Connection then
+            Connection = LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("FloorMaterial"):Connect(function()
+                LocalPlayer.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Physics)
+            end)
+        end
+    else
+        if Connection then
+            Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            Connection:Disconnect()
+            Connection = nil
+        end
+    end
+end)
+
+Anti:addToggle("Anti Fling", false, function(Value)
+    if Value then
+        if not Connection then
+            Connection = RunService.RenderStepped:Connect(function()
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                    HumanoidRootPart.Velocity = Vector3.new()
+                end
+            end)
+        end
+    else
+        if Connection then
+            Connection:Disconnect()
+            Connection = nil
+        end
+    end
+end)
+
+Anti:addToggle("Anti Stun", false, function(Value)
+    if Value then
+        if not Connection then
+            Connection = RunService.RenderStepped:Connect(function()
+                if LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then
+                    LocalPlayer.Character.Humanoid.PlatformStand = false
+                end
+            end)
+        end
+    else
+        if Connection then
+            Connection:Disconnect()
+            Connection = nil
+        end
+    end
+end)
+--// SERVER \\--
+Server:addButton("Rejoin", function()
+    TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+end)
+
+Server:addButton("Serverhop", function()
+    loadstring(game:HttpGet(('https://raw.githubusercontent.com/goldpue/goldpue/main/ServerHop'),true))()
+end)
+MAIN
+Main:addButton("Tp to lobby", function()
+HumanoidRootPart.CFrame = CFrame.new(-77, 99, 1)
+end)
+
+Main:addToggle("Invite All", false, function(Value)
+    InviteAll = Value
+    while InviteAll and task.wait() do
+        function Fix()
+            for i,v in pairs (Players:GetChildren()) do
+                RepStorage.EventsFolder.BoatSelection.InviteGuestRF:InvokeServer(v.Name)
+            end
+        end
+        pcall(Fix)
+    end
+end)
+
+Main:addToggle("RGB Water", false, function(v)
+    if not v then
+        Workspace.Terrain.WaterColor = Color3.fromRGB(52, 120, 154)
+        if Connection then Connection:Disconnect() end
+    else
+        Connection = RunService.Stepped:Connect(function()
+            Workspace.Terrain.WaterColor = Color3.fromHSV(tick() % 255 / 255, 1, 1)
+        end)
+    end
+end)
+
+Main:addToggle("Inf Oxygen", false, function(Value)
+    local oxygenScript = game.Players.LocalPlayer
+        :FindFirstChild("PlayerScripts")
+        :FindFirstChild("HUD")
+        :FindFirstChild("Oxygen")
+
+    if oxygenScript then
+        oxygenScript.Disabled = not Value
+    end
+end)
+
+Main:addToggle("Kill survivor", false, function(Value)
+    spawn(function()
+        while Value do
+            pcall(function()
+                if game.Players.LocalPlayer.Team.Name == "Shark" then
+                    for _, v in pairs(game.Players:GetPlayers()) do
+                        if v.Team.Name == "Survivor" and v.Character then
+                            Workspace.Sharks:FindFirstChild("Shark" .. game.Players.LocalPlayer.Name):MoveTo(v.Character:FindFirstChild("HumanoidRootPart").Position)
+                            v.Character:MoveTo(Workspace.Sharks:FindFirstChild("Shark" .. game.Players.LocalPlayer.Name).Position)
+                        end
+                    end
+                end
+            end)
+            wait()
+        end
+    end)
+end)
+
+Main:addToggle("Player ESP", false, function(Value)
+    PlayerEsp = Value
+    updateEsp()
+end)
+
+Main:addToggle("Shark ESP", false, function(Value)
+    SharkEsp = Value
+    updateEsp()
+end)
+
+for i,v in pairs (RepStorage.ClientViewportObjects.Boats:GetChildren()) do
+    if v ~= "Play Shark Sound" then
+        Main:addButton(v.Name, function()
+            RepStorage.EventsFolder.BoatSelection.UpdateHostBoat:FireServer(v.Name)
+        end)
+    end
+end
+--// TARGET \\--
+T:addTextbox("Target", nil, function(v)
+    local t = gplr(v)
+    if t then
+        TARGET = t
+        Notify:SendNotification("Info", "Found " .. TARGET.Name, 3)
+    else
+        Notify:SendNotification("Info", "Target Not Found: " .. v, 3)
+    end
+end)
+
+T:addToggle("View", false, function(Value)
+    if Value then
+        Workspace.CurrentCamera.CameraSubject = TARGET.Character.HumanoidRootPart
+    else
+        Workspace.CurrentCamera.CameraSubject = LocalPlayer.Character.Humanoid
+    end
+end)
+
+T:addButton("Teleport", function()
+    HumanoidRootPart.CFrame = CFrame.new(TARGET.Character.HumanoidRootPart.Position+Vector3.new(3,0,0))
+end)
+
+T:addButton("Inspect", function()
+GuiService:CloseInspectMenu()
+GuiService:InspectPlayerFromUserId(TARGET.UserId)
+end)
+--// FLING \\--
+F:addToggle("Fling", false, function(Value)
+    fling = Value
+end)
+
+RunService.Heartbeat:Connect(function()
+    if fling then
+        if TARGET.Character:FindFirstChild("Head") then
+            HumanoidRootPart.AssemblyLinearVelocity = Vector3.zero
+            HumanoidRootPart.AssemblyAngularVelocity = Vector3.zero
+            HumanoidRootPart.CFrame = CFrame.new(TARGET.Character.HumanoidRootPart.Position + (TARGET.Character.Humanoid.MoveDirection * 0.70 * TARGET.Character.Humanoid.WalkSpeed))
+            local orvelocity = HumanoidRootPart.Velocity
+            HumanoidRootPart.Velocity = Vector3.new(0, -999999999, 0)
+            RunService.Stepped:Wait()
+            HumanoidRootPart.Velocity = orvelocity
+        else
+            HumanoidRootPart.CFrame = HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+        end
+    else
+        HumanoidRootPart.CFrame = HumanoidRootPart.CFrame
+    end
+end)
+--// STRAFE \\--
+C:addSlider("CircleRadius", CircleRadius, 10, 100, function(Value)
+    CircleRadius = Value
+end)
+
+C:addSlider("CircleSpeed", CircleSpeed, 10, 50, function(Value)
+    CircleSpeed = Value
+end)
+
+C:addToggle("Circle", false, function(Value)
+    if Value and TARGET and TARGET.Character and TARGET.Character:FindFirstChild("HumanoidRootPart") then
+        local angle = math.atan2(TARGET.Character.HumanoidRootPart.Position.Z - LocalPlayer.Character.HumanoidRootPart.Position.Z, TARGET.Character.HumanoidRootPart.Position.X - LocalPlayer.Character.HumanoidRootPart.Position.X)
+        ChangeCirclePlayer = RunService.Heartbeat:Connect(function()
+            angle = angle + CircleSpeed * 0.01
+            local x = TARGET.Character.HumanoidRootPart.Position.X + CircleRadius * math.cos(angle)
+            local z = TARGET.Character.HumanoidRootPart.Position.Z + CircleRadius * math.sin(angle)
+            LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(x, LocalPlayer.Character.HumanoidRootPart.Position.Y, z))
+            LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(LocalPlayer.Character.HumanoidRootPart.Position, TARGET.Character.HumanoidRootPart.Position))
+        end)
+    elseif ChangeCirclePlayer then
+        ChangeCirclePlayer:Disconnect()
+        ChangeCirclePlayer = nil
+    end
+end)
+--// EXPEREMENT \\--
+SniperContainer, SniperText = Sniper:addParagraph("Status", "Join a player by just knowing what game their in!")
+WebhookContainer, WebhookText = Webhook:addParagraph("Status", "Spam a webhook")
+
+Sniper:addTextbox("Target User Id", nil, function(Value)
+    local userId = tonumber(Value)
+    if not userId then
+        Notify:SendNotification("Error", Value .. " is not a valid User Id", 5)
+    else
+        ChangeTargetUserId = Value
+    end
+end)
+
+Sniper:addTextbox("Target Place Id", nil, function(Value)
+    local placeId = tonumber(Value)
+    if not placeId then
+        Notify:SendNotification("Error", Value .. " is not a valid Place Id", 5)
+    else
+        ChangeTargetPlaceId = Value
+    end
+end)
+
+Sniper:addToggle("Search", false, function(Value)
+    ChangeSearch = Value
+    if not ChangeSearch then CancelSearch() return end
+    SniperText.Text = 'Getting user info...'
+    
+    local userAvatarUrl = GetAvatar(ChangeTargetUserId)
+    local cursor = ""
+    local sniperfound = false
+    local sniperpage = 1
+    
+    repeat if not ChangeSearch then CancelSearch() return end
+        SniperText.Text = "Retrieving server list... (Page " .. sniperpage .. ")"
+        local url = "https://games.roblox.com/v1/games/"..ChangeTargetPlaceId.."/servers/Public?sortOrder=Asc&limit=100"
+        if cursor then
+            url = url .. "&cursor=" .. cursor
+        end
+        
+        local response = request({ Url = url }).Body
+        if response then
+            local data = HttpService:JSONDecode(response)
+            for i, server in ipairs(data.data) do
+                if not ChangeSearch then CancelSearch() return end
+                task.wait()
+                SniperText.Text = "Scanning servers (Page " .. sniperpage .. " - " .. i .. "/" .. #data.data .. " - " .. server.playing .. " online)"
+                local AvatarUrls = GetUser(server.Tokens)
+                for _, AvatarUrl in ipairs(AvatarUrls) do
+                    if not ChangeSearch then CancelSearch() return end
+                    task.wait()
+                    if AvatarUrl == userAvatarUrl then
+                        SniperText.Text = "Player found, Teleporting..."
+                        TeleportService:TeleportToPlaceInstance(ChangeTargetPlaceId, server.id, LocalPlayer)
+                        task.wait(0.1)
+                        sniperfound = true
+                        break
+                    end
+                end
+                if sniperfound then break end end
+            cursor = data.nextPageCursor or ""
+            sniperpage = sniperpage + 1
+        else
+            Notify:SendNotification("Error", "Your exploit does not support this (missing request)", 5)
+            return
+        end
+    until sniperfound or cursor == ""
+    
+    if not sniperfound then
+        SniperText.Text = "The user could not be found in the game."
+    end
+end)
+
+WebhookContainer, WebhookText = Webhook:addParagraph("Status", "Spam a webhook")
+
+Webhook:addTextbox("Webhook Url", nil, function(Value, focusLost)
+    ChangeWebhookUrl = Value
+end)
+
+Webhook:addTextbox("Webhook Username", nil, function(Value, focusLost)
+    ChangeWebhookUsername = Value
+end)
+
+Webhook:addTextbox("Webhook Message", nil, function(Value, focusLost)
+    ChangeWebhookMessage = Value
+end)
+
+Webhook:addTextbox("Webhook Time", "1", function(Value, focusLost)
+    local waitTime = tonumber(Value)
+    if waitTime then
+        ChangeWaitTime = waitTime
+    end
+end)
+
+Webhook:addToggle("Spam Webhook", false, function(Value)
+    ChangeSpamWebhook = Value
+    if ChangeSpamWebhook then
+        WebhookText.Text = 'Spamming...'
+        while ChangeSpamWebhook do
+            task.wait(ChangeWaitTime or 1)
+            local function SpamWebhook()
+                request({
+                    Url = ChangeWebhookUrl,
+                    Method = "POST",
+                    Headers = {["Content-Type"] = "application/json"},
+                    Body = HttpService:JSONEncode({content = ChangeWebhookMessage, username = ChangeWebhookUsername})
+                })
+            end
+            pcall(SpamWebhook)
+        end
+        WebhookText.Text = 'Spam a webhook'
+    else
+        WebhookText.Text = 'Spam a webhook'
+    end
+end)
+--// SETTING \\--
+Settings:addKeybind("UI Toggle", Enum.KeyCode.LeftControl, function()
+    lib:toggle()
+end, function() 
+end)
+
+Settings:addToggle("UI Toggle Button", false, function(Value)
+    ChangeToggle = Value
+    if ChangeToggle then
+        ToggleUI()
+    else
+        for i, v in pairs(CoreGui:GetChildren()) do
+            if v.Name == "Button0" then
+                v:Destroy()
+            end
+        end
+    end
+end)
+
+for theme, color in pairs(Themes) do
+    Theme:addColorPicker(theme, color, function(color3)
+        lib:setTheme(theme, color3)
+    end)
+end
+
+Credits:addButton("Seth", function()
+end)
+
+--// SOON \\--
+Nil2:addParagraph("FE", "Soon!")
+
+--// END \\--
+lib:SelectPage(lib.pages[1], true)
+local End = tick()
+local Total = string.format("%.2f seconds", math.abs(End - Start))
+Notify:SendNotification("Info", "Loaded > " .. Total, 3)
