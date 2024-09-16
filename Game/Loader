@@ -1,14 +1,15 @@
 repeat wait() until game:IsLoaded()
 
 local Notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/IceMinisterq/Notification-Library/Main/Library.lua"))()
-
+local Touchscreen = game:GetService("UserInputService").TouchEnabled
 local games = {
-    [8908228901] = 'SharkBite'
+    [8908228901] = 'SharkBite%202'
 }
 
 getgenv().Check = (Touchscreen and "Mobile") or "PC"
 Notify:SendNotification("Info", getgenv().Check .. " detected.", 2)
 task.wait(1)
+
 if games[game.PlaceId] then
     Notify:SendNotification("Success", "Game Supported!", 2)
     loadstring(game:HttpGet('https://raw.githubusercontent.com/goldpue/goldpue/main/Game/' .. games[game.PlaceId]))()
