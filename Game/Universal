@@ -995,9 +995,9 @@ end
 Credits:addButton("Seth", function()
 end)
 --// SOON \\--
-loadstring(game:HttpGet('https://raw.githubusercontent.com/goldpue/goldpue/main/Statuses'))()
 
 Nil2:addParagraph("FE", "Soon!")
+
 --// END \\--
 lib:SelectPage(lib.pages[1], true)
 local End = tick()
