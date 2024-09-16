@@ -11,7 +11,7 @@ local Themes = {
     Glow               = Color3.fromRGB(0, 0, 0),
     Accent             = Color3.fromRGB(10, 10, 10),
     LightContrast      = Color3.fromRGB(20, 20, 20),
-    DarkContrast       = Color3.fromRGB(14, 14, 14),
+    DarkContrast       = Color3.fromRGB(14, 14, 14),    
     TextColor          = Color3.fromRGB(255, 255, 255)    
 }
 
@@ -489,7 +489,7 @@ local function updateEsp()
         sharkHighlights = {}
     end
 end
-MAIN
+
 Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
     WalkSpeedSlider = Value
     if ChangeWalkSpeed then
