@@ -1,4 +1,5 @@
 repeat wait() until game:IsLoaded()
+local v, method, ref
 
 local Notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/IceMinisterq/Notification-Library/Main/Library.lua"))()
 local Touchscreen = game:GetService("UserInputService").TouchEnabled
@@ -9,6 +10,51 @@ local games = {
 getgenv().Check = (Touchscreen and "Mobile") or "PC"
 Notify:SendNotification("Info", getgenv().Check .. " detected.", 2)
 task.wait(1)
+
+local function getGlobal(path)
+    v = getfenv(0)
+    for name in string.gmatch(path, "[^.]+") do v = v[name] end
+    return v
+end
+
+local function Method(name, aliases, callback)
+    task.spawn(function()
+        if not callback then
+            print("⏺️ " .. name)
+        elseif not getGlobal(name) then
+            print("⛔ " .. name)
+        else
+            local success, msg = pcall(callback)
+            print(success and "✅ " .. name .. (msg and " • " .. msg or "") or "⛔ " .. name .. " failed: " .. msg)
+        end
+
+        for _, alias in ipairs(aliases) do
+            if getGlobal(alias) == false then print("⚠️ " .. alias) end
+        end
+    end)
+end
+
+Method("hookfunction", {"replaceclosure"}, function()
+    local function Method() return true end
+    ref = hookfunction(Method, function() return false end)
+    assert(Method() == false)
+    assert(ref() == true)
+end)
+
+Method("getnamecallmethod", {}, function()
+    ref = hookmetamethod(game, "__namecall", function(...)
+        method = method or getnamecallmethod()
+        return ref(...)
+    end)
+    game:GetService("Lighting")
+    assert(method == "GetService")
+end)
+
+Method("Drawing.new", {}, function()
+    local drawing = Drawing.new("Square") or Drawing.new("Circle")
+    drawing.Visible = false
+    assert(pcall(function() drawing:Destroy() end))
+end)
 
 if games[game.PlaceId] then
     Notify:SendNotification("Success", "Game Supported!", 2)
