@@ -93,7 +93,7 @@ local v, method, ref
 loadstring(game:HttpGet('https://raw.githubusercontent.com/goldpue/goldpue/main/Statuses'))()
 Container01, Text01 = Nil:addParagraph(nil, "Universal: " .. Games_Universal)
 Container02, Text02 = Nil:addParagraph(nil, "Sharkbite2: " .. Games_Sharkbite)
-
+Container03, Text03 = Nil:addParagraph(nil, "FOBLOX: " .. Games_FOBLOX)
 --// FUNCTION \\--
 local function GetRoot(char)
     return char:FindFirstChild("Head")
