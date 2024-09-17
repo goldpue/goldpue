@@ -4,7 +4,8 @@ local v, method, ref
 local Notify = loadstring(game:HttpGet("https://raw.githubusercontent.com/IceMinisterq/Notification-Library/Main/Library.lua"))()
 local Touchscreen = game:GetService("UserInputService").TouchEnabled
 local games = {
-    [8908228901] = 'SharkBite%202'
+    [8908228901] = 'SharkBite%202',
+    [7863262550] = 'FOBLOX'
 }
 
 getgenv().Check = (Touchscreen and "Mobile") or "PC"
