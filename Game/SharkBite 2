@@ -62,6 +62,7 @@ local RepStorage       = game:GetService("ReplicatedStorage")
 local HttpService      = game:GetService("HttpService")
 local RunService       = game:GetService("RunService")
 local GuiService       = game:GetService("GuiService")
+local TweenService     = game:GetService("TweenService")
 
 local DefaultZoom      = LocalPlayer.CameraMaxZoomDistance
 local DefaultWalkSpeed = Humanoid.WalkSpeed
@@ -490,6 +491,29 @@ local function updateEsp()
     end
 end
 
+local function getGlobal(path)
+    v = getfenv(0)
+    for name in string.gmatch(path, "[^.]+") do v = v[name] end
+    return v
+end
+
+local function Method(name, aliases, callback)
+    task.spawn(function()
+        if not callback then
+            print("⏺️ " .. name)
+        elseif not getGlobal(name) then
+            print("⛔ " .. name)
+        else
+            local success, msg = pcall(callback)
+            print(success and "✅ " .. name .. (msg and " • " .. msg or "") or "⛔ " .. name .. " failed: " .. msg)
+        end
+
+        for _, alias in ipairs(aliases) do
+            if getGlobal(alias) == false then print("⚠️ " .. alias) end
+        end
+    end)
+end
+--// LOCALPLAYER \\--
 Player:addSlider("Walkspeed", DefaultWalkSpeed, 0, 200, function(Value)
     WalkSpeedSlider = Value
     if ChangeWalkSpeed then
@@ -1145,6 +1169,27 @@ end)
 Nil2:addParagraph("FE", "Soon!")
 
 --// END \\--
+Method("hookfunction", {"replaceclosure"}, function()
+    local function Method() return true end
+    ref = hookfunction(Method, function() return false end)
+    assert(Method() == false)
+    assert(ref() == true)
+end)
+
+Method("getnamecallmethod", {}, function()
+    ref = hookmetamethod(game, "__namecall", function(...)
+        method = method or getnamecallmethod()
+        return ref(...)
+    end)
+    game:GetService("Lighting")
+    assert(method == "GetService")
+end)
+
+Method("Drawing.new", {}, function()
+    local drawing = Drawing.new("Square") or Drawing.new("Circle")
+    drawing.Visible = false
+    assert(pcall(function() drawing:Destroy() end))
+end)
 lib:SelectPage(lib.pages[1], true)
 local End = tick()
 local Total = string.format("%.2f seconds", math.abs(End - Start))
